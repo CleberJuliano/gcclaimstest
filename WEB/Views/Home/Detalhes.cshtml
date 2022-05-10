@@ -1,0 +1,32 @@
+﻿@model WEB.ViewsModels.PersonagemViewModel.DetalhesDoPersonagemViewModel
+@{
+    ViewData["Title"] = "Detalhes";
+}
+<div class="row">
+    <div class="col-md-2">
+        <a asp-action="Index" asp-controller="Home" class="btn-secondary btn btn-sm">Voltar</a>
+    </div>
+    <div class="col-md-10">
+        <h5>Detalhes do Personagem @Model.Nome</h5>
+    </div>
+</div>
+<hr />
+@if (Model != null)
+{
+    <dl class="row">
+        <dt class="col-md-2">Imagem</dt>
+        <dd class="col-md-10">
+            <img src="@Model.Imagem" class="img-fluid" width="100" />
+        </dd>
+        <dt class="col-md-2">Nome</dt>
+        <dd class="col-md-10">@Model.Nome</dd>
+
+        <dt class="col-md-2">Descrição</dt>
+        <dd class="col-md-10">@Model.Descricao</dd>
+    </dl>
+    
+}
+else
+{
+    <p class="text-info text-center">Não existem registros para serem exibidos.</p>
+}

@@ -1,0 +1,93 @@
+﻿@model WEB.ViewsModels.PersonagemViewModel.ListarPersonagemViewModel
+@{
+    ViewData["Title"] = "Início";
+    var paginaAnterior = Model.Pagina > 1 ? Model.Pagina - 1 : 1;
+    var proximaPagina = Model.Pagina + 1;
+}
+<div class="row">
+    <div class="col-md-12">
+        <h5>Personagens da Marvel</h5>
+    </div>
+</div>
+
+<form asp-action="Index" method="get">
+    <input type="hidden" name="pagina" value="@Model.Pagina" />
+    <div class="row">
+        <div class="col-md-10">
+            <input type="text" class="form-control" name="parametroDeBusca" value="@ViewBag.parametroDeBusca" placeholder="Pesquisar por nome">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary btn-block" type="submit">Pesquisar</button>
+        </div>
+    </div>
+</form>
+@if (TempData["erro"] != null)
+{
+    <div class="row">
+        <div class="col">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Atenção!</strong> @TempData["erro"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+@if (Model.Personagens.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Personagens.OrderBy(x => !x.favorito).ThenBy(x => x.name))
+                {
+                    <tr>
+                        <td>@item.name</td>
+                        <td>@item.description</td>
+                        <td>
+                            @if (!item.favorito)
+                            {
+                                <form asp-action="Favoritar" method="post">
+                                    <input type="hidden" name="id" value="@item.id" />
+                                    <button type="submit" class="btn-success btn btn-sm">Favoritar</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="Desfavoritar" method="post">
+                                    <input type="hidden" name="id" value="@item.id" />
+                                    <button type="submit" class="btn-warning btn btn-sm">Desfavoritar</button>
+                                </form>
+                            }
+
+                            <a asp-action="Detalhes" asp-controller="Home" asp-route-id="@item.id" class="btn-primary btn btn-sm">Detalhes</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="text-info text-center">Não existem registros para serem exibidos.</p>
+}
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(Model.Pagina == 1 ? "disabled" : string.Empty)">
+            <a class="page-link" asp-action="Index" asp-controller="Home" asp-route-pagina="@paginaAnterior" asp-route-parametroDeBusca="@ViewBag.parametroDeBusca" tabindex="-1" aria-disabled="true">Anterior</a>
+        </li>
+        @*<li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>*@
+        <li class="page-item @(Model.Pagina + 1 == Model.TotalDePaginas ? "disabled" : string.Empty)">
+            <a class="page-link" asp-action="Index" asp-controller="Home" asp-route-pagina="@proximaPagina" asp-route-parametroDeBusca="@ViewBag.parametroDeBusca">Próxima</a>
+        </li>
+    </ul>
+</nav>
